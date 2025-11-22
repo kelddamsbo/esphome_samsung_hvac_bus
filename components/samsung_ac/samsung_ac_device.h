@@ -413,12 +413,10 @@ namespace esphome
           if (preset)
           {
             climate->preset = preset.value();
-            climate->custom_preset.reset();
           }
           else
           {
-            climate->preset.reset();
-            climate->custom_preset = mode->name;
+            ESP_LOGW(TAG, "Alt mode %s has no matching preset", mode->name.c_str());
           }
           climate->publish_state();
         }
@@ -525,4 +523,5 @@ namespace esphome
     };
   } // namespace samsung_ac
 } // namespace esphome
+
 
