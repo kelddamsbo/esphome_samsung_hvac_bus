@@ -40,7 +40,6 @@ namespace esphome
           climate::CLIMATE_SWING_BOTH});
       return traits;
     }
-
     void Samsung_AC_Climate::control(const climate::ClimateCall &call)
     {
       traits();
@@ -70,10 +69,10 @@ namespace esphome
         request.fan_mode = climatefanmode_to_fanmode(fanmodeOpt.value());
       }
 
-      auto customFanmodeOpt = call.get_custom_fan_mode();
-      if (customFanmodeOpt.has_value())
+      const char *customFanmode = call.get_custom_fan_mode();
+      if (customFanmode != nullptr)
       {
-        request.fan_mode = customfanmode_to_fanmode(customFanmodeOpt.value());
+        request.fan_mode = customfanmode_to_fanmode(std::string(customFanmode));
       }
 
       auto presetOpt = call.get_preset();
@@ -82,10 +81,10 @@ namespace esphome
         set_alt_mode_by_name(request, preset_to_altmodename(presetOpt.value()));
       }
 
-      auto customPresetOpt = call.get_custom_preset();
-      if (customPresetOpt.has_value())
+      const char *customPreset = call.get_custom_preset();
+      if (customPreset != nullptr)
       {
-        set_alt_mode_by_name(request, customPresetOpt.value());
+        set_alt_mode_by_name(request, AltModeName(customPreset));
       }
 
       auto swingModeOpt = call.get_swing_mode();
@@ -111,4 +110,5 @@ namespace esphome
     }
   } // namespace samsung_ac
 } // namespace esphome
+
 
