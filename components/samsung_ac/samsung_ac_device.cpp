@@ -12,76 +12,32 @@ namespace esphome
   {
     climate::ClimateTraits Samsung_AC_Climate::traits()
     {
-      auto traits = climate::ClimateTraits();
+      climate::ClimateTraits traits;
 
       traits.set_supports_current_temperature(true);
+      traits.set_visual_temperature_step(1.0f);
+      traits.set_visual_min_temperature(16.0f);
+      traits.set_visual_max_temperature(30.0f);
 
-      traits.set_visual_temperature_step(1);
-      traits.set_visual_min_temperature(16);
-      traits.set_visual_max_temperature(30);
-
-      const std::set<climate::ClimateMode> modes = {
+      traits.set_supported_modes({
           climate::CLIMATE_MODE_OFF,
           climate::CLIMATE_MODE_AUTO,
           climate::CLIMATE_MODE_COOL,
           climate::CLIMATE_MODE_DRY,
           climate::CLIMATE_MODE_FAN_ONLY,
-          climate::CLIMATE_MODE_HEAT};
-      traits.set_supported_modes(modes);
+          climate::CLIMATE_MODE_HEAT});
 
-      std::set<climate::ClimateFanMode> fan = {
-          climate::ClimateFanMode::CLIMATE_FAN_HIGH,
-          climate::ClimateFanMode::CLIMATE_FAN_MIDDLE,
-          climate::ClimateFanMode::CLIMATE_FAN_LOW};
+      traits.set_supported_fan_modes({
+          climate::CLIMATE_FAN_HIGH,
+          climate::CLIMATE_FAN_MIDDLE,
+          climate::CLIMATE_FAN_LOW,
+          climate::CLIMATE_FAN_AUTO});
 
-      if (this->mode != climate::CLIMATE_MODE_FAN_ONLY)
-      {
-        fan.insert(climate::ClimateFanMode::CLIMATE_FAN_AUTO);
-      }
-
-      if (is_nasa_address(device->address))
-      {
-        // fan.insert(climate::ClimateFanMode::CLIMATE_FAN_DIFFUSE);
-      }
-
-      traits.set_supported_fan_modes(fan);
-
-      std::set<std::string> customFan;
-      customFan.insert("Turbo");
-      traits.set_supported_custom_fan_modes(customFan);
-
-      auto supported = device->get_supported_alt_modes();
-      if (!supported->empty())
-      {
-        std::set<climate::ClimatePreset> presets;
-        std::set<std::string> custom_presets;
-        for (const AltModeDesc &mode : *supported)
-        {
-          auto preset = altmodename_to_preset(mode.name);
-          if (preset)
-            presets.insert(preset.value());
-          else
-            custom_presets.insert(mode.name);
-        };
-        traits.set_supported_presets(presets);
-        traits.set_supported_custom_presets(custom_presets);
-      }
-
-      bool h = device->supports_horizontal_swing();
-      bool v = device->supports_vertical_swing();
-      if (h || v)
-      {
-        std::set<climate::ClimateSwingMode> swingMode;
-        swingMode.insert(climate::ClimateSwingMode::CLIMATE_SWING_OFF);
-        if (h)
-          swingMode.insert(climate::ClimateSwingMode::CLIMATE_SWING_HORIZONTAL);
-        if (v)
-          swingMode.insert(climate::ClimateSwingMode::CLIMATE_SWING_VERTICAL);
-        if (h && v)
-          swingMode.insert(climate::ClimateSwingMode::CLIMATE_SWING_BOTH);
-        traits.set_supported_swing_modes(swingMode);
-      }
-
+      traits.set_supported_swing_modes({
+          climate::CLIMATE_SWING_OFF,
+          climate::CLIMATE_SWING_HORIZONTAL,
+          climate::CLIMATE_SWING_VERTICAL,
+          climate::CLIMATE_SWING_BOTH});
       return traits;
     }
 
@@ -155,3 +111,4 @@ namespace esphome
     }
   } // namespace samsung_ac
 } // namespace esphome
+
